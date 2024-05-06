@@ -5,6 +5,7 @@ import random
 
 
 def choose_word():
+    """Choose a random word for the hangman game."""
     words = [
         "python",
         "hangman",
@@ -27,11 +28,15 @@ def choose_word():
 
 
 class HangmanGame:
+    """A class representing a hangman game."""
+
     def __init__(self):
+        """Initialize the hangman game."""
         self.reset_game()
         self.clients = []
 
     def reset_game(self):
+        """Reset the game to start a new round."""
         self.word = choose_word()
         self.masked_word = ["_"] * len(self.word)
         self.attempts = 6
@@ -39,6 +44,7 @@ class HangmanGame:
         self.guesses = []
 
     def guess(self, name, letter):
+        """Make a guess in the hangman game."""
         if letter in self.guessed_letters:
             return False, "Already guessed"
         self.guessed_letters.add(letter)
@@ -59,6 +65,7 @@ class HangmanGame:
             return False, "Incorrect"
 
     def get_game_state(self):
+        """Get the current state of the game."""
         return {
             "masked_word": "".join(self.masked_word),
             "attempts": self.attempts,
@@ -67,6 +74,7 @@ class HangmanGame:
         }
 
     def broadcast(self, message):
+        """Send a message to all connected clients."""
         for client in self.clients[:]:
             try:
                 client.sendall(message)
@@ -74,8 +82,8 @@ class HangmanGame:
                 self.clients.remove(client)
 
 
-# Handling Guesses and Updating Game State
 def client_thread(conn, addr, game):
+    """Handle guesses and update game state for a client."""
     try:
         name = conn.recv(1024).decode()
         if not name:
@@ -102,6 +110,7 @@ def client_thread(conn, addr, game):
 
 
 def main():
+    """Start the hangman server."""
     host = "0.0.0.0"
     port = 8000
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

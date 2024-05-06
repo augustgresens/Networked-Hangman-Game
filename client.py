@@ -6,7 +6,10 @@ import threading
 
 
 class HangmanClient(tk.Frame):
+    """Tkinter GUI for a Hangman game client."""
+
     def __init__(self, master=None):
+        """Initialize the client and set up the UI."""
         super().__init__(master)
         self.master = master
         self.canvas = None
@@ -23,6 +26,7 @@ class HangmanClient(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
+        """Create the initial set of widgets for the game."""
         self.name_label = tk.Label(self, text="Enter your name:")
         self.name_label.pack()
 
@@ -47,6 +51,7 @@ class HangmanClient(tk.Frame):
         self.tally_label.pack()
 
     def setup_connection(self):
+        """Set up the connection to the server."""
         self.player_name = self.name_entry.get()
         self.host = self.ip_entry.get()
         self.port = 8000
@@ -57,10 +62,11 @@ class HangmanClient(tk.Frame):
         threading.Thread(target=self.listen_for_updates, daemon=True).start()
 
     def initialize_game_ui(self):
+        """Initialize the game UI after connecting to the server."""
         self.reset_game_ui()
 
-    # Resets game to initial state after game is finished
     def reset_game_ui(self):
+        """Reset the UI to the initial state."""
         if self.canvas:
             self.canvas.destroy()
         if self.word_label:
@@ -92,11 +98,13 @@ class HangmanClient(tk.Frame):
         self.guesses_label.pack()
 
     def draw_gallows(self):
+        """Draw the gallows for the hangman."""
         self.canvas.create_line(150, 20, 150, 50)
         self.canvas.create_line(120, 20, 150, 20)
         self.canvas.create_line(120, 20, 120, 200)
 
     def draw_hangman(self, attempts_left):
+        """Draw the hangman based on the remaining attempts."""
         steps = 6 - attempts_left
         self.canvas.delete("hangman")
         if steps > 0:
@@ -113,6 +121,7 @@ class HangmanClient(tk.Frame):
             self.canvas.create_line(150, 120, 130, 140, tags="hangman")
 
     def send_guess(self):
+        """Send a guess to the server."""
         guess = self.guess_entry.get().strip().lower()
         if len(guess) == 1 and guess.isalpha():
             self.client_socket.sendall(guess.encode())
@@ -122,8 +131,8 @@ class HangmanClient(tk.Frame):
             )
         self.guess_entry.delete(0, tk.END)
 
-    # Updates UI based on current state
     def update_display(self, game_state):
+        """Update the display based on the current game state."""
         self.word_label.config(text="Word: " + " ".join(game_state["masked_word"]))
         self.status_label.config(
             text=f"Attempts Left: {game_state['attempts']}, Guessed: {', '.join(game_state['guessed_letters'])}"
@@ -144,8 +153,8 @@ class HangmanClient(tk.Frame):
             text=f"Wins/Losses: {self.win_loss_tally['wins']}/{self.win_loss_tally['losses']}"
         )
 
-    # Allows game to update display live for each player
     def listen_for_updates(self):
+        """Listen for updates from the server."""
         while True:
             try:
                 response = self.client_socket.recv(1024).decode()
@@ -160,6 +169,7 @@ class HangmanClient(tk.Frame):
 
 
 def main():
+    """Start the Hangman client."""
     root = tk.Tk()
     root.state("zoomed")
     app = HangmanClient(master=root)
