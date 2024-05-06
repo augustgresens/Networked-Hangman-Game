@@ -5,7 +5,24 @@ import random
 
 
 def choose_word():
-    words = ["python", "hangman", "network", "server", "client"]
+    words = [
+        "python",
+        "hangman",
+        "network",
+        "server",
+        "client",
+        "router",
+        "packet",
+        "firewall",
+        "protocol",
+        "wireless",
+        "gateway",
+        "switch",
+        "subnet",
+        "socket",
+        "bandwidth",
+    ]
+
     return random.choice(words)
 
 
